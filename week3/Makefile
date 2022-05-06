@@ -1,4 +1,4 @@
-TARGET = app
+OUTPUT_FILE_NAME = app
 CODE_SPACE_ADDRESS = 0x8000000
 
 # Define the linker script location and chip architecture.
@@ -45,37 +45,37 @@ LFLAGS += -nostdlib
 LFLAGS += -lgcc
 LFLAGS += -T$(LSCRIPT)
 
-AS_SRC = ./targets/stm32f767/startup_stm32f767xx.s
-CPP_SRC = ./src/main.cpp
+ASSEMBLY_SOURCE = ./targets/stm32f767/startup_stm32f767xx.s
+CPP_SOURCE = $(wildcard ./src/*.cpp)
 
 INCLUDE = -I ./
 INCLUDE += -I ./targets/stm32f767/headers
 
-OBJS = $(AS_SRC:.s=.o)
-OBJS += $(CPP_SRC:.cpp=.o)
+ASSEMBLY_OBJ = $(addprefix dist/, $(notdir $(ASSEMBLY_SOURCE:.s=.o)))
+CPP_OBJ = $(addprefix dist/, $(notdir $(CPP_SOURCE:.cpp=.o)))
 
-.PHONY: all
-all: $(TARGET).bin
+.PHONY: build clean flash
 
-%.o: %.s
+build: clean $(OUTPUT_FILE_NAME).bin
+
+$(ASSEMBLY_OBJ): $(ASSEMBLY_SOURCE)
 	$(GCC) -x assembler-with-cpp $(ASFLAGS) $< -o $@
 
-%.o: %.cpp
+$(CPP_OBJ): $(CPP_SOURCE)
 	$(GCC) -c $(CPPFLAGS) $(INCLUDE) $< -o $@
 
-$(TARGET).elf: $(OBJS)
-	$(GCC) $^ $(LFLAGS) -o $@
+$(OUTPUT_FILE_NAME).elf: $(ASSEMBLY_OBJ) $(CPP_OBJ)
+	$(GCC) $^ $(LFLAGS) -o dist/$@
 
-$(TARGET).bin: $(TARGET).elf
-	$(OC) -S -O binary $< $@
-	$(OS) $<
+$(OUTPUT_FILE_NAME).bin: $(OUTPUT_FILE_NAME).elf
+	$(OC) -S -O binary dist/$< dist/$@
+	$(OS) dist/$<
 
-.PHONY: clean
-clean:
-	rm -f $(OBJS)
-	rm -f $(TARGET).elf
-	rm -f $(TARGET).bin
+clean: dist
+	rm -rf ./dist/*
 
-.PHONY: flash
-flash:
-	st-flash --reset write $(TARGET).bin $(CODE_SPACE_ADDRESS)
+dist:
+	mkdir -p dist
+
+flash: $(OUTPUT_FILE_NAME).bin
+	st-flash --reset write ./dist/$(OUTPUT_FILE_NAME).bin $(CODE_SPACE_ADDRESS)
