@@ -2,8 +2,8 @@ TARGET = app
 CODE_SPACE_ADDRESS = 0x8000000
 
 # Define the linker script location and chip architecture.
-LD_SCRIPT = STM32F767ZITx.ld
-MCU_SPEC  = cortex-m7
+LD_SCRIPT = ./targets/stm32f767/STM32F767ZITx.ld
+MCU_SPEC = cortex-m7
 
 # Toolchain definitions (ARM bare metal defaults)
 TOOLCHAIN = /usr
@@ -45,13 +45,13 @@ LFLAGS += -nostdlib
 LFLAGS += -lgcc
 LFLAGS += -T$(LSCRIPT)
 
-AS_SRC   =  ./startup_stm32f767xx.s
-CPP_SRC    =  ./src/main.cpp
+AS_SRC = ./targets/stm32f767/startup_stm32f767xx.s
+CPP_SRC = ./src/main.cpp
 
-INCLUDE  =  -I./
-INCLUDE  += -I./device_headers
+INCLUDE = -I ./
+INCLUDE += -I ./targets/stm32f767/headers
 
-OBJS  = $(AS_SRC:.s=.o)
+OBJS = $(AS_SRC:.s=.o)
 OBJS += $(CPP_SRC:.cpp=.o)
 
 .PHONY: all
