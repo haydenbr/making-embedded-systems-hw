@@ -1,7 +1,8 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
-#include "stm32f767xx.h"
+// #include "stm32f767xx.h"
+#include "stm32f429xx.h"
 
 #define BUTTON_PIN (13)
 #define BLUE_LED_PIN (7)
