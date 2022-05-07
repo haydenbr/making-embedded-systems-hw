@@ -1,5 +1,5 @@
 # command line args
-TARGET_MCU := stm32f767
+TARGET_MCU := stm32f429
 TARGET_MCU := $(shell echo $(TARGET_MCU) | tr A-Z a-z)
 
 # target-specific variables

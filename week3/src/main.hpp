@@ -3,10 +3,9 @@
 
 // #include "stm32f767xx.h"
 #include "stm32f429xx.h"
+#include <cstdint>
 
-#define BUTTON_PIN (13)
-#define BLUE_LED_PIN (7)
-#define RED_LED_PIN (14)
-#define GREEN_LED_PIN (0)
+constexpr std::uint8_t BUTTON_PIN = 0; // PA0
+constexpr std::uint8_t LED_PIN = 13; // PG13
 
 #endif
