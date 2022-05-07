@@ -1,9 +1,22 @@
-OUTPUT_FILE_NAME = app
-CODE_SPACE_ADDRESS = 0x8000000
+# command line args
+TARGET_MCU := stm32f767
+TARGET_MCU := $(shell echo $(TARGET_MCU) | tr A-Z a-z)
 
-# Define the linker script location and chip architecture.
-LD_SCRIPT = ./targets/stm32f767/STM32F767ZITx.ld
-MCU_SPEC = cortex-m7
+# target-specific variables
+CODE_SPACE_ADDRESS = ""
+MCU_SPEC = ""
+
+include ./targets/$(TARGET_MCU)/variables.mk
+
+ifeq ($(CODE_SPACE_ADDRESS), "")
+$(error variable CODE_SPACE_ADDRESS is required)
+endif
+
+ifeq ($(MCU_SPEC), "")
+$(error variable MCU_SPEC is required)
+endif
+
+LD_SCRIPT = ./targets/$(TARGET_MCU)/linker_script.ld
 
 # Toolchain definitions (ARM bare metal defaults)
 TOOLCHAIN = /usr
@@ -45,11 +58,13 @@ LFLAGS += -nostdlib
 LFLAGS += -lgcc
 LFLAGS += -T$(LSCRIPT)
 
-ASSEMBLY_SOURCE = ./targets/stm32f767/startup_stm32f767xx.s
+OUTPUT_FILE_NAME = app
+
+ASSEMBLY_SOURCE = ./targets/$(TARGET_MCU)/startup.s
 CPP_SOURCE = $(wildcard ./src/*.cpp)
 
 INCLUDE = -I ./
-INCLUDE += -I ./targets/stm32f767/headers
+INCLUDE += -I ./targets/$(TARGET_MCU)/headers
 
 ASSEMBLY_OBJ = $(addprefix dist/, $(notdir $(ASSEMBLY_SOURCE:.s=.o)))
 CPP_OBJ = $(addprefix dist/, $(notdir $(CPP_SOURCE:.cpp=.o)))
