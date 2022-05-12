@@ -7,8 +7,4 @@
 constexpr std::uint8_t BUTTON_PIN = 0; // PA0
 constexpr std::uint8_t LED_PIN = 13; // PG13
 
-volatile bool led_on = false;
-
-void EXTI0_IRQHandler(void);
-
 #endif
